@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Admin Page</title>
+    <!-- 다크모드 스타일 -->
+    <style>
+    body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+    }
+
+    .dark-mode .table {
+        background-color: #1e1e1e;
+        color: #ffffff;
+        border-color: #444444;
+    }
+
+    .dark-mode .table th,
+    .dark-mode .table td {
+        border-color: #444444;
+    }
+
+    .dark-mode .form-select,
+    .dark-mode .form-control {
+        background-color: #1e1e1e;
+        color: #ffffff;
+        border-color: #444444;
+    }
+
+    .dark-mode .form-control::placeholder {
+        color: #ffffff;
+    }
+
+    .dark-mode .pagination {
+        background-color: #121212;
+        color: #ffffff;
+    }
+
+    .dark-mode .page-link {
+        color: #ffffff;
+        background-color: #1e1e1e;
+        border-color: #444444;
+    }
+
+    .dark-mode .page-item.active .page-link {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .dark-mode .page-item.disabled .page-link {
+        color: #6c757d;
+    }
+
+    .dark-mode h3 {
+        color: #ffffff;
+    }
+
+    .btn-dark-mode {
+        transition: background-color 0.3s, color 0.3s;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-3">
+        <!-- 오늘 날짜와 시간 표시 -->
+        <div id="date-time" style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">
+            <span id="current-time"></span>
+       </div>
+
+    <div class="container mt-3">
+        <!-- 필터 폼 -->
+        <h3 class="mt-5 mb-3">신규 등록 상품</h3>
+        <form class="row row-cols-lg-auto g-3 align-items-center">
+            <div class="col-12">
+                <label class="visually-hidden" for="categorySelect">카테고리</label>
+                <select class="form-select" id="categorySelect" onchange="filterProducts()">
+                    <option value="">카테고리</option>
+                    <option value="상의">상의</option>
+                    <option value="하의">하의</option>
+                    <option value="신발">신발</option>
+                    <option value="패션잡화">패션잡화</option>
+                </select>
+            </div>
+            <div class="col-12">
+                <label class="visually-hidden" for="genderSelect">성별</label>
+                <select class="form-select" id="genderSelect" onchange="filterProducts()">
+                    <option value="">성별</option>
+                    <option value="남성">남성</option>
+                    <option value="여성">여성</option>
+                </select>
+            </div>
+            <div class="col-3">
+                <input type="text" class="form-control" id="productSearch" placeholder="제품명을 입력해주세요"
+                    oninput="filterProducts()">
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-success w-100" title="조회버튼은 장식용 ㅋ"
+                    onclick="filterProducts()">조회</button>
+            </div>
+            <div class="col-join">
+                <a href="join.html" class="btn btn-primary w-100">회원가입</a>
+            </div>
+                <!-- 다크모드 버튼 -->
+        <button id="darkModeToggle" class="btn btn-dark w-10" onclick="toggleDarkMode()">다크모드</button>
+        </form>
+
+        <!-- 상품 목록 테이블 -->
+        <div class="container mt-3">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th><strong>카테고리</strong></th>
+                        <th><strong>브랜드</strong></th>
+                        <th><strong>상품명</strong></th>
+                        <th><strong>성별</strong></th> <!-- 성별 컬럼 추가 -->
+                        <th><strong>가격</strong></th>
+                    </tr>
+                </thead>
+                <tbody id="product_data_Table">
+                    <!-- 필터링된 상품들이 여기에 추가됩니다 -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <nav aria-label="상품 목록 페이지네이션">
+            <ul class="pagination justify-content-center" id="pagination">
+                <!-- 페이지네이션 버튼들이 여기에 추가됩니다 -->
+            </ul>
+        </nav>
+    </div>
+
+    <script>
+         // 다크모드 활성화 여부를 저장하는 변수
+         let isDarkMode = false;
+
+        // 다크모드를 토글하는 함수
+        function toggleDarkMode() {
+                isDarkMode = !isDarkMode; // 다크모드 상태를 반전시킴
+                document.body.classList.toggle('dark-mode', isDarkMode); // 다크모드 활성화
+                document.getElementById('darkModeToggle').innerText = isDarkMode ? '기본모드' : '다크모드'; // 버튼 텍스트 변경
+                document.getElementById('product_table').classList.toggle('dark-mode', isDarkMode); // 테이블 다크모드 적용
+            }
+
+        // 오늘 날짜와 시간을 업데이트하는 함수
+        function updateDateTime() {
+            const now = new Date();
+            const date = now.toLocaleDateString('ko-KR');
+            const time = now.toLocaleTimeString('ko-KR');
+            document.getElementById('current-time').innerHTML = `${date} ${time}`;
+        }
+        updateDateTime();
+
+        // 1초마다 날짜와 시간을 업데이트
+        setInterval(updateDateTime, 1000);
+
+        // 다크모드를 토글하는 함수
+        function toggleDarkMode() {
+            event.preventDefault(); // 기본 동작(새로고침)을 막음
+            isDarkMode = !isDarkMode; // 다크모드 상태를 반전시킴
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode'); // 다크모드 활성화
+            } else {
+                document.body.classList.remove('dark-mode'); // 다크모드 비활성화
+            }
+        }
+        
+        const categories = ["상의", "하의", "신발", "패션잡화"];
+        const brands = ["Nike", "Adidas", "Puma", "Reebok", "Vans", "Levi's", "Zara", "Uniqlo", "Converse", "Tommy Hilfiger", "Supreme", "H&M", "Champion", "Fila", "Carhartt", "Patagonia", "Ralph Lauren", "Bape", "The North Face", "Under Armour"];
+        const products = ["후드티", "트랙 팬츠", "에어맥스 97", "레트로 백팩", "스포츠 반팔티", "스트레이트 팬츠", "슈퍼스타", "슬림벨트", "후드 집업", "조거 팬츠", "990v5", "레더 장지갑", "그래픽 반팔티", "슬림핏 청바지", "클래식 레더", "스포츠 캡", "로고 맨투맨", "플렉스 트랙 팬츠", "올드스쿨", "러닝 시계", "테크핏 티셔츠", "카고 팬츠", "커맨드 트레일", "로고 토트백", "피케 셔츠", "청반바지", "척 70", "클러치백", "워크 자켓", "슬랙스", "고스트 14", "지갑", "폴로 티셔츠", "데님 팬츠", "젤-카야노", "GG 마몬트 벨트백", "플리스 자켓", "반바지", "스웨이드 클래식", "피카부 백팩", "드라이핏 반팔티", "슬림핏 청바지", "1 로우", "레더 토트백", "카모 후디", "조거 팬츠", "클래식 레더", "시그니처 팔찌", "컬러블록 후디", "레귤러핏 팬츠", "슬립온", "크리스탈 목걸이", "고어텍스 자켓", "다운 팬츠", "슬라이드", "디지털 시계", "기능성 티셔츠", "쿨워크 팬츠", "골프 슈즈", "마트라세 퀼팅 백", "어드벤쳐 자켓", "베이직 슬랙스", "프리몬트", "보드리 장지갑", "새로운 상품"];
+
+        const generatePrice = () => {
+            const price = Math.floor(Math.random() * 500000) + 5000;
+            const priceRounded = Math.floor(price / 100) * 100;  // 100원 단위로 반올림
+            return priceRounded.toLocaleString();  // 콤마 추가
+        };
+
+        const product_data = [];
+        for (let i = 0; i < 9824; i++) {
+            const category = categories[Math.floor(Math.random() * categories.length)];
+            const brand = brands[Math.floor(Math.random() * brands.length)];
+            const product = products[Math.floor(Math.random() * products.length)];
+            const price = generatePrice();
+            const gender = Math.random() < 0.5 ? "남성" : "여성"; // 남성 또는 여성 랜덤 설정
+            
+            product_data.push({ category, brand, product, price, gender });
+        }
+
+        let filteredProducts = [...product_data];  // 처음에는 모든 상품을 표시
+        const productsPerPage = 10;  // 한 페이지에 표시할 상품 개수
+        let currentPage = 1;  // 현재 페이지
+        const maxVisiblePages = 5;  // 한 번에 표시할 최대 페이지 개수
+
+        // 상품 목록을 페이지에 맞게 표시하는 함수
+        function displayProducts(page) {
+            const startIndex = (page - 1) * productsPerPage;
+            const endIndex = startIndex + productsPerPage;
+            const displayedProducts = filteredProducts.slice(startIndex, endIndex);
+
+            const tableBody = document.getElementById('product_data_Table');
+            tableBody.innerHTML = '';
+
+            displayedProducts.forEach(item => {
+                const row = tableBody.insertRow();
+                row.insertCell(0).innerText = item.category;
+                row.insertCell(1).innerText = item.brand;
+                row.insertCell(2).innerText = item.product;
+                row.insertCell(3).innerText = item.gender;  // 성별 추가
+                row.insertCell(4).innerText = item.price;
+            });
+        }
+
+        // 페이지네이션을 설정하는 함수
+        function setupPagination() {
+            const totalPages = Math.ceil(filteredProducts.length / productsPerPage); // 전체 페이지 수 계산
+            const pagination = document.getElementById('pagination'); // 페이지네이션 요소를 선택
+            pagination.innerHTML = ''; // 기존 페이지네이션 요소를 초기화
+
+            // 현재 페이지를 기준으로 표시할 시작 페이지와 끝 페이지 계산
+            let startPage = Math.floor((currentPage - 1) / maxVisiblePages) * maxVisiblePages + 1;
+            let endPage = Math.min(startPage + maxVisiblePages - 1, totalPages);
+
+            // 첫 페이지 버튼 (<<) 고정
+            const firstLi = document.createElement('li'); // 첫 페이지 버튼 리스트 항목 생성
+            firstLi.classList.add('page-item'); // 클래스 추가하여 스타일 적용
+            const firstA = document.createElement('a'); // 링크 요소 생성
+            firstA.classList.add('page-link'); // 클래스 추가하여 스타일 적용
+            firstA.href = "#"; // 링크 주소
+            firstA.innerHTML = "&laquo;&laquo;"; // << 표시
+            firstA.onclick = function () { // 클릭 시 첫 페이지로 이동
+                currentPage = 1; // 현재 페이지를 1로 설정
+                displayProducts(currentPage); // 상품 목록을 첫 페이지에 맞게 표시
+                setupPagination(); // 페이지네이션을 다시 설정
+            };
+            if (currentPage === 1) { // 첫 페이지일 경우
+                firstLi.classList.add('disabled'); // 비활성화
+            }
+            firstLi.appendChild(firstA); // 링크를 리스트 항목에 추가
+            pagination.appendChild(firstLi); // 페이지네이션에 추가
+
+            // 이전 페이지 버튼 (<) 고정
+            const prevLi = document.createElement('li'); // 이전 페이지 버튼 리스트 항목 생성
+            prevLi.classList.add('page-item'); // 클래스 추가하여 스타일 적용
+            const prevA = document.createElement('a'); // 링크 요소 생성
+            prevA.classList.add('page-link'); // 클래스 추가하여 스타일 적용
+            prevA.href = "#"; // 링크 주소
+            prevA.innerHTML = "&lt;"; // < 표시
+            prevA.onclick = function () { // 클릭 시 이전 페이지로 이동
+                currentPage--; // 현재 페이지를 한 페이지 뒤로 이동
+                displayProducts(currentPage); // 상품 목록을 이전 페이지에 맞게 표시
+                setupPagination(); // 페이지네이션을 다시 설정
+            };
+            if (currentPage === 1) { // 첫 페이지일 경우
+                prevLi.classList.add('disabled'); // 비활성화
+            }
+            prevLi.appendChild(prevA); // 링크를 리스트 항목에 추가
+            pagination.appendChild(prevLi); // 페이지네이션에 추가
+
+            // 페이지 번호 버튼 설정
+            for (let i = startPage; i <= endPage; i++) { // 시작 페이지부터 끝 페이지까지 반복
+                const li = document.createElement('li'); // 페이지 번호 리스트 항목 생성
+                li.classList.add('page-item'); // 클래스 추가하여 스타일 적용
+                if (i === currentPage) li.classList.add('active'); // 현재 페이지에 'active' 클래스 추가
+                const a = document.createElement('a'); // 링크 요소 생성
+                a.classList.add('page-link'); // 클래스 추가하여 스타일 적용
+                a.href = "#"; // 링크 주소
+                a.innerText = i; // 페이지 번호 표시
+                a.onclick = function () { // 클릭 시 해당 페이지로 이동
+                    currentPage = i; // 현재 페이지를 선택된 페이지로 설정
+                    displayProducts(currentPage); // 상품 목록을 해당 페이지에 맞게 표시
+                    setupPagination(); // 페이지네이션을 다시 설정
+                };
+                li.appendChild(a); // 링크를 리스트 항목에 추가
+                pagination.appendChild(li); // 페이지네이션에 추가
+            }
+
+            // 다음 페이지 버튼 (>) 고정
+            const nextLi = document.createElement('li'); // 다음 페이지 버튼 리스트 항목 생성
+            nextLi.classList.add('page-item'); // 클래스 추가하여 스타일 적용
+            const nextA = document.createElement('a'); // 링크 요소 생성
+            nextA.classList.add('page-link'); // 클래스 추가하여 스타일 적용
+            nextA.href = "#"; // 링크 주소
+            nextA.innerHTML = "&gt;"; // > 표시
+            nextA.onclick = function () { // 클릭 시 다음 페이지로 이동
+                currentPage++; // 현재 페이지를 한 페이지 앞으로 이동
+                displayProducts(currentPage); // 상품 목록을 다음 페이지에 맞게 표시
+                setupPagination(); // 페이지네이션을 다시 설정
+            };
+            if (currentPage === totalPages) { // 마지막 페이지일 경우
+                nextLi.classList.add('disabled'); // 비활성화
+            }
+            nextLi.appendChild(nextA); // 링크를 리스트 항목에 추가
+            pagination.appendChild(nextLi); // 페이지네이션에 추가
+
+            // 마지막 페이지 버튼 (>>) 고정
+            const lastLi = document.createElement('li'); // 마지막 페이지 버튼 리스트 항목 생성
+            lastLi.classList.add('page-item'); // 클래스 추가하여 스타일 적용
+            const lastA = document.createElement('a'); // 링크 요소 생성
+            lastA.classList.add('page-link'); // 클래스 추가하여 스타일 적용
+            lastA.href = "#"; // 링크 주소
+            lastA.innerHTML = "&raquo;&raquo;"; // >> 표시
+            lastA.onclick = function () { // 클릭 시 마지막 페이지로 이동
+                currentPage = totalPages; // 현재 페이지를 마지막 페이지로 설정
+                displayProducts(currentPage); // 상품 목록을 마지막 페이지에 맞게 표시
+                setupPagination(); // 페이지네이션을 다시 설정
+            };
+            if (currentPage === totalPages) { // 마지막 페이지일 경우
+                lastLi.classList.add('disabled'); // 비활성화
+            }
+            lastLi.appendChild(lastA); // 링크를 리스트 항목에 추가
+            pagination.appendChild(lastLi); // 페이지네이션에 추가
+        }
+
+        // 필터링된 상품 목록을 업데이트하는 함수
+        function filterProducts() {
+            const searchQuery = document.getElementById('productSearch').value.toLowerCase(); // 입력된 검색어
+            const selectedCategory = document.getElementById('categorySelect').value; // 선택된 카테고리
+            const selectedGender = document.getElementById('genderSelect').value; // 선택된 성별
+
+            filteredProducts = product_data.filter(item => {
+                const matchesCategory = selectedCategory ? item.category === selectedCategory : true;
+                const matchesGender = selectedGender ? item.gender === selectedGender : true;
+                const matchesSearch = item.product.toLowerCase().includes(searchQuery);
+                return matchesCategory && matchesGender && matchesSearch;
+            });
+
+            currentPage = 1; // 첫 페이지로 리셋
+            displayProducts(currentPage); // 필터된 상품 목록 표시
+            setupPagination(); // 페이지네이션 업데이트
+        }
+
+        displayProducts(currentPage); // 페이지 로드 시 상품 목록 표시
+        setupPagination(); // 페이지네이션 설정
+    </script>
+</body>
+
+</html>
