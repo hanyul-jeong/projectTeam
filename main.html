@@ -1,78 +1,84 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <title>Admin Page</title>
-    <!-- 다크모드 스타일 -->
     <style>
-    body.dark-mode {
-    background-color: #121212;
-    color: #ffffff;
-    }
+        body.dark-mode {
+            background-color: #252525;
+            color: #ffffff;
+        }
 
-    .dark-mode .table {
-        background-color: #1e1e1e;
-        color: #ffffff;
-        border-color: #444444;
-    }
+        .dark-mode .table {
+            background-color: #252525;
+            color: #ffffff;
+            border-color: #444444;
+        }
 
-    .dark-mode .table th,
-    .dark-mode .table td {
-        border-color: #444444;
-    }
+        .dark-mode .table th,
+        .dark-mode .table td {
+            background-color: #252525;
+            color: #ffffff;
+            border-color: #444444;
+        }
 
-    .dark-mode .form-select,
-    .dark-mode .form-control {
-        background-color: #1e1e1e;
-        color: #ffffff;
-        border-color: #444444;
-    }
+        .dark-mode .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #2a2a2a;
+        }
 
-    .dark-mode .form-control::placeholder {
-        color: #ffffff;
-    }
+        .dark-mode .table-hover tbody tr:hover {
+            background-color: #333333;
+        }
 
-    .dark-mode .pagination {
-        background-color: #121212;
-        color: #ffffff;
-    }
+        .dark-mode .form-select,
+        .dark-mode .form-control {
+            background-color: #1e1e1e;
+            color: #ffffff;
+            border-color: #444444;
+        }
 
-    .dark-mode .page-link {
-        color: #ffffff;
-        background-color: #1e1e1e;
-        border-color: #444444;
-    }
+        .dark-mode .form-control::placeholder {
+            color: #ffffff;
+        }
 
-    .dark-mode .page-item.active .page-link {
-        background-color: #007bff;
-        border-color: #007bff;
-    }
+        .dark-mode .pagination {
+            background-color: #252525;
+            color: #ffffff;
+        }
 
-    .dark-mode .page-item.disabled .page-link {
-        color: #6c757d;
-    }
+        .dark-mode .page-link {
+            color: #ffffff;
+            background-color: #1e1e1e;
+            border-color: #444444;
+        }
 
-    .dark-mode h3 {
-        color: #ffffff;
-    }
+        .dark-mode .page-item.active .page-link {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
 
-    .btn-dark-mode {
-        transition: background-color 0.3s, color 0.3s;
-    }
+        .dark-mode .page-item.disabled .page-link {
+            color: #6c757d;
+        }
+
+        .dark-mode h3 {
+            color: #ffffff;
+        }
+
+        .btn-dark-mode {
+            transition: background-color 0.3s, color 0.3s;
+        }
     </style>
 </head>
-
 <body>
     <div class="container mt-3">
         <!-- 오늘 날짜와 시간 표시 -->
         <div id="date-time" style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">
             <span id="current-time"></span>
-       </div>
+        </div>
 
-    <div class="container mt-3">
         <!-- 필터 폼 -->
         <h3 class="mt-5 mb-3">신규 등록 상품</h3>
         <form class="row row-cols-lg-auto g-3 align-items-center">
@@ -105,8 +111,8 @@
             <div class="col-join">
                 <a href="join.html" class="btn btn-primary w-100">회원가입</a>
             </div>
-                <!-- 다크모드 버튼 -->
-        <button id="darkModeToggle" class="btn btn-dark w-10" onclick="toggleDarkMode()">다크모드</button>
+            <!-- 다크모드 버튼 -->
+            <button id="darkModeToggle" class="btn btn-dark w-10" onclick="toggleDarkMode()">다크모드</button>
         </form>
 
         <!-- 상품 목록 테이블 -->
@@ -117,7 +123,7 @@
                         <th><strong>카테고리</strong></th>
                         <th><strong>브랜드</strong></th>
                         <th><strong>상품명</strong></th>
-                        <th><strong>성별</strong></th> <!-- 성별 컬럼 추가 -->
+                        <th><strong>성별</strong></th>
                         <th><strong>가격</strong></th>
                     </tr>
                 </thead>
@@ -136,16 +142,28 @@
     </div>
 
     <script>
-         // 다크모드 활성화 여부를 저장하는 변수
-         let isDarkMode = false;
+        // 다크모드 활성화 여부를 저장하는 변수
+        let isDarkMode = false;
 
         // 다크모드를 토글하는 함수
         function toggleDarkMode() {
-                isDarkMode = !isDarkMode; // 다크모드 상태를 반전시킴
-                document.body.classList.toggle('dark-mode', isDarkMode); // 다크모드 활성화
-                document.getElementById('darkModeToggle').innerText = isDarkMode ? '기본모드' : '다크모드'; // 버튼 텍스트 변경
-                document.getElementById('product_table').classList.toggle('dark-mode', isDarkMode); // 테이블 다크모드 적용
+            event.preventDefault(); // 기본 동작(새로고침)을 막음
+            isDarkMode = !isDarkMode; // 다크모드 상태를 반전시킴
+            document.body.classList.toggle('dark-mode', isDarkMode); // 본문에 다크모드 적용
+
+            // 버튼 텍스트 변경
+            document.getElementById('darkModeToggle').innerText = isDarkMode ? '기본모드' : '다크모드';
+
+            // 다크모드가 필요한 모든 요소에 클래스 적용
+            document.querySelectorAll('.table, .form-select, .form-control, .pagination, h3, .btn-dark-mode')
+                .forEach(el => el.classList.toggle('dark-mode', isDarkMode));
+
+            // 테이블에 dark-mode 클래스 추가
+            const table = document.querySelector('.table');
+            if (table) {
+                table.classList.toggle('dark-mode', isDarkMode);
             }
+        }
 
         // 오늘 날짜와 시간을 업데이트하는 함수
         function updateDateTime() {
@@ -158,17 +176,6 @@
 
         // 1초마다 날짜와 시간을 업데이트
         setInterval(updateDateTime, 1000);
-
-        // 다크모드를 토글하는 함수
-        function toggleDarkMode() {
-            event.preventDefault(); // 기본 동작(새로고침)을 막음
-            isDarkMode = !isDarkMode; // 다크모드 상태를 반전시킴
-            if (isDarkMode) {
-                document.body.classList.add('dark-mode'); // 다크모드 활성화
-            } else {
-                document.body.classList.remove('dark-mode'); // 다크모드 비활성화
-            }
-        }
         
         const categories = ["상의", "하의", "신발", "패션잡화"];
         const brands = ["Nike", "Adidas", "Puma", "Reebok", "Vans", "Levi's", "Zara", "Uniqlo", "Converse", "Tommy Hilfiger", "Supreme", "H&M", "Champion", "Fila", "Carhartt", "Patagonia", "Ralph Lauren", "Bape", "The North Face", "Under Armour"];
