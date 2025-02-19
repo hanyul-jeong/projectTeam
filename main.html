@@ -73,33 +73,36 @@
         
 
         /* 새로 추가 */
+        /* 기본 효과 스크립트로 변경되지 않으면 이것만 있어도 됨 */
         .dark-mode {
             background-color: #252525 !important;
             border-color: #444444 !important;
             color: white !important;
         }
-
-        .dark-mode input:focus, .dark-mode  textarea:focus, .dark-mode  select:focus {
-            box-shadow: none;
+        .dark-mode .page-item.active .page-link {
+            background-color: #6f6f6f !important;
         }
+        .dark-mode .page-item.disabled .page-link {
+            color: #6c757d !important;
+        }
+        .dark-mode .form-control::placeholder {
+            color: #6f6f6f !important;
+        }
+        .dark-mode input:focus, .dark-mode  textarea:focus, .dark-mode  select:focus {
+            box-shadow: none  !important;
+        }
+        /* 버튼 효과 */
+        .btn-dark-mode {
+            transition: background-color 0.3s, color 0.3s;
+        } 
 
+        /* 페이지 네이션으로 인해 풀리는 스타일 적용 */
         .dark-mode .table th,
         .dark-mode .table td {
             background-color: #252525;
             color: #ffffff;
             border-color: #444444;
         }
-
-        .dark-mode .page-item.active .page-link {
-            background-color: #6f6f6f ;
-        }
-        .dark-mode .page-item.disabled .page-link {
-            color: #6c757d;
-        }
-        .dark-mode .form-control::placeholder {
-            color: #6f6f6f ;
-        }
-
         .dark-mode .page-link {
             color: #ffffff;
             background-color: #252525;
